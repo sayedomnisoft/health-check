@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SME Systems Health Check — The Gantry</title>
 <meta name="description" content="10 questions, 60 seconds: find out how much of your week your business is losing to manual work — and which process is leaking the most.">
-<meta property="og:title" content="SME Systems Health Check">
-<meta property="og:description" content="10 questions, 60 seconds: how much of your week is your business losing to manual work?">
+<meta property="og:title" content="How much of your week is manual work? Score your business in 60 seconds">
+<meta property="og:description" content="10 honest questions, a score out of 20, and the exact processes leaking your hours. Free, no email needed to see your result. Built for Singapore SMEs.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://sayedomnisoft.github.io/health-check/">
 <meta property="og:image" content="https://sayedomnisoft.github.io/health-check/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <style>
@@ -81,6 +82,9 @@
     h1 { font-size: 25px; }
     .qtext { font-size: 19px; }
   }
+  .cta-ghost { display: block; text-align: center; margin-top: 10px; padding: 12px; font-size: 14px; font-weight: 600; color: var(--muted); border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; text-decoration: none; }
+  .cta-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+  .next-step { margin-top: 18px; }
 </style>
 </head>
 <body>
@@ -115,8 +119,13 @@
       <div class="leaks-title">YOUR BIGGEST LEAKS</div>
       <ul class="leaks" id="leaks"></ul>
     </div>
-    <a class="cta" href="https://sayedr.substack.com/subscribe?utm_source=health-check" target="_blank" rel="noopener">Get the weekly fix — subscribe free</a>
-    <div class="cta-sub">The Gantry: playbooks for running an SME without heroics. One idea a week buys back hours.</div>
+    <div class="next-step" id="nextStep">
+      <div class="leaks-title">WHAT TO DO WITH THIS</div>
+      <p class="verdict" id="nextText"></p>
+    </div>
+    <a class="cta" id="bookBtn" href="https://sayedomnisoft.github.io/tools/review.html?utm_source=health-check" target="_blank" rel="noopener">Talk it through — 20-min systems review</a>
+    <div class="cta-sub" id="ctaSub">Bring the one process that annoys you most. We walk it end to end and you leave with the first fix worth making, or an honest "not yet". No slides, no licence quote.</div>
+    <a class="cta-ghost" href="https://sayedr.substack.com/subscribe?utm_source=health-check" target="_blank" rel="noopener">Not ready to talk? Get the weekly fix instead</a>
     <button class="ghost" onclick="restart()">Retake the check</button>
     <div class="footer">Built by <a href="https://sayedr.substack.com" target="_blank" rel="noopener">Sayed Rashid</a> · The Gantry</div>
   </div>
@@ -161,16 +170,24 @@ const QUESTIONS = [
 const BANDS = [
   { min: 0, max: 4, name: "Systems-Ready",
     verdict: "You're ahead of the pack. Your operation runs on systems, not memory — which means you're one of the few SMEs actually ready to put AI and automation on top. Your next wins are refinement, not rescue.",
-    hours: "Teams at this level typically lose <strong>under 3 hours a week</strong> to manual work. Guard it." },
+    hours: "Teams at this level typically lose <strong>under 3 hours a week</strong> to manual work. Guard it.",
+    next: "Nothing here needs a call. The moment to revisit is a second site, a second entity, or a doubling of headcount. Until then, one idea a week is plenty.",
+    book: false },
   { min: 5, max: 10, name: "Held Together by Heroes",
     verdict: "Your business works — because a few good people carry it. The processes run on memory, effort, and WhatsApp. That's fine until a hero resigns, falls sick, or takes leave. The goal now: move what's in heads into systems, one process at a time.",
-    hours: "Teams at this level typically lose <strong>6–10 hours per person, per week</strong> to re-keying, checking, and chasing." },
+    hours: "Teams at this level typically lose <strong>6–10 hours per person, per week</strong> to re-keying, checking, and chasing.",
+    next: "Pick the one leak above that bit you most recently. That is the process to walk through first. Twenty minutes is enough to see whether it is a quick fix or a real project.",
+    book: true },
   { min: 11, max: 15, name: "The Spreadsheet Is the Business",
     verdict: "Right now, your real operating system is a collection of spreadsheets and chat groups — and one or two people who understand them. Growth will multiply the chaos, not the profit. The fix isn't more software; it's one source of truth, starting with your most painful process.",
-    hours: "Teams at this level typically lose <strong>10–16 hours per person, per week</strong> — more than a full working day." },
+    hours: "Teams at this level typically lose <strong>10–16 hours per person, per week</strong> — more than a full working day.",
+    next: "Do not buy anything yet. At this score the mistake is a big system bought in a hurry. Walk one process end to end with someone who has seen this before, and decide from that.",
+    book: true },
   { min: 16, max: 20, name: "Running on Luck",
     verdict: "Honest score — and honestly risky. Almost everything depends on people remembering, noticing, and firefighting. You don't need a transformation project; you need one bounded fix that proves what calm feels like. Start with the process that broke most recently.",
-    hours: "Teams at this level typically lose <strong>17+ hours per person, per week</strong> — and the errors cost more than the hours." }
+    hours: "Teams at this level typically lose <strong>17+ hours per person, per week</strong> — and the errors cost more than the hours.",
+    next: "Start with the process that broke most recently, not the biggest one. Twenty minutes on that single process is the fastest way to find out what calm would cost.",
+    book: true }
 ];
 
 let idx = 0, score = 0, leaks = [];
@@ -211,6 +228,9 @@ function finish() {
   document.getElementById("band").textContent = band.name;
   document.getElementById("verdict").textContent = band.verdict;
   document.getElementById("hours").innerHTML = band.hours;
+  document.getElementById("nextText").textContent = band.next;
+  document.getElementById("bookBtn").style.display = band.book ? "" : "none";
+  document.getElementById("ctaSub").style.display = band.book ? "" : "none";
   const ul = document.getElementById("leaks");
   ul.innerHTML = "";
   if (leaks.length) {
